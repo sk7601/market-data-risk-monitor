@@ -39,11 +39,14 @@ def test_report():
 
 
 def test_provider_retry_and_empty(monkeypatch):
-    from market.ingestion import fetch
     import yfinance
+
+    from market.ingestion import fetch
+
     class EmptyProvider:
         def history(self, **kwargs):
             return pd.DataFrame()
+
     monkeypatch.setattr(yfinance, "Ticker", lambda symbol: EmptyProvider())
     monkeypatch.setattr("market.ingestion.time.sleep", lambda delay: None)
     with pytest.raises(RuntimeError, match="3 attempts"):
@@ -52,8 +55,8 @@ def test_provider_retry_and_empty(monkeypatch):
 
 def test_rejections_recorded(url):
     from market.database import Issue
-    raw = pd.DataFrame([dict(date="2024-01-02", open=-1, high=2, low=-2,
-                             close=1, volume=10)])
+
+    raw = pd.DataFrame([dict(date="2024-01-02", open=-1, high=2, low=-2, close=1, volume=10)])
     run_id = ingest(["SPY"], "2024-01-02", "2024-01-02", url=url, frames={"SPY": raw})
     with sessions(url)() as db:
         assert db.get(Run, run_id).rejected == 1
