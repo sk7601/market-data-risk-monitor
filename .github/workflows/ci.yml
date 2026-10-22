@@ -28,3 +28,18 @@ jobs:
       - run: pytest tests/integration/test_pipeline.py
         env:
           TEST_DATABASE_URL: postgresql+psycopg://portfolio:ci-only@localhost:5432/market_test
+
+      - name: Docker Compose end-to-end smoke
+        run: |
+          docker compose up --build -d
+          for attempt in $(seq 1 90); do
+            if curl --fail --silent http://localhost:8501/_stcore/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose logs --no-color
+          exit 1
+      - name: Compose cleanup
+        if: always()
+        run: docker compose down
