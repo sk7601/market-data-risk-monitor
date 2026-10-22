@@ -78,3 +78,9 @@ def test_other_edges():
     ]:
         with pytest.raises(ValueError):
             returns(p)
+
+
+def test_confidence_label_and_duplicate_index():
+    assert "historical_var_99" in metrics(pd.Series([0.1, -0.1]), 0.99)
+    with pytest.raises(ValueError):
+        returns(pd.DataFrame({"A": [1, 2]}, index=pd.to_datetime(["2024-01-02", "2024-01-02"])))

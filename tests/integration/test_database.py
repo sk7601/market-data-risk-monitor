@@ -9,3 +9,4 @@ def test_schema():
     assert len(inspect(db).get_table_names()) == 7
     Base.metadata.drop_all(db)
     assert not inspect(db).get_table_names()
+    db.dispose()

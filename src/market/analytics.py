@@ -41,7 +41,7 @@ def metrics(r: pd.Series, confidence: float = 0.95) -> dict[str, float]:
         "daily_volatility": float(r.std(ddof=1)),
         "annualized_volatility": float(r.std(ddof=1) * np.sqrt(252)),
         "max_drawdown": float(drawdown(r).min()),
-        "historical_var_95": float(-r.quantile(1 - confidence)),
+        f"historical_var_{confidence * 100:g}": float(-r.quantile(1 - confidence)),
     }
 
 
