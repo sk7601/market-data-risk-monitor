@@ -17,6 +17,7 @@ from sqlalchemy import (
     event,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
+from sqlalchemy.pool import NullPool, StaticPool
 
 
 def utcnow() -> datetime:
@@ -104,7 +105,8 @@ class Holding(Base):
 
 
 def engine(url: str | None = None):
-    db = create_engine(url or os.getenv("DATABASE_URL", "sqlite:///market.db"))
+    target = url or os.getenv("DATABASE_URL", "sqlite:///market.db")
+    db = create_engine(target, poolclass=StaticPool if target == "sqlite://" else NullPool)
     if db.dialect.name == "sqlite":
 
         @event.listens_for(db, "connect")
